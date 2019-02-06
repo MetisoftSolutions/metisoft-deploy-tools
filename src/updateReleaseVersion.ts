@@ -101,7 +101,8 @@ function __gitCommit() {
     .then(() => __runCommand('git add package.json'))
     .then(() => __runCommand('git commit -m "Updating version."'))
     .then(() => __runCommand('git push'))
-    .then(() => __gitCommitStepCompleted = true);
+    .then(() => __gitCommitStepCompleted = true)
+    .then(() => {});
 }
 
 
@@ -111,6 +112,7 @@ function __rollBackGitCommit() {
   return Promise.resolve()
     .then(() => __runCommand('git revert -n HEAD'))
     .then(() => __runCommand('git commit -m "Reverting previous commit due to error in version update."'))
+    .then(() => {});
 }
 
 
@@ -278,7 +280,7 @@ function __run(repoPath: string, githubApiKey: string) {
 
 
 function __printUsage() {
-  console.log("Usage: ts-node ./node_modules/metisoft-package-version-updater/src/updateReleaseVersion.ts <repoPath> <githubApiKey>");
+  console.log("Usage: node ./node_modules/metisoft-deploy-tools/dist/updateReleaseVersion.js <repoPath> <githubApiKey>");
   console.log("\n<repoPath> is formatted as: <organizationOrUsername>/<repo>");
   console.log("Example: MetisoftSolutions/recruitchute-server-api-interfaces");
 }

@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as request from 'request';
+import { Promise } from 'es6-promise';
 
 const __pathToPackageJson = path.join('.', 'package.json');
 
@@ -158,7 +159,7 @@ function __run(githubApiKey: string, packageNames: string[]) {
 
 
 function __printUsage() {
-  console.log("Usage: ts-node ./node_modules/metisoft-update-private-dependency-versions/src/updatePrivateDependencyVersions.ts <githubApiKey> <packageName1> [<packageName2> [... [<packageNameN>]]]");
+  console.log("Usage: node ./node_modules/metisoft-deploy-tools/dist/updatePrivateDependencyVersions.js <githubApiKey> <packageName1> [<packageName2> [... [<packageNameN>]]]");
   console.log("\n<packageNameI> is a key in the dependencies object of package.json.");
   console.log("Example: recruitchute-server-api-interfaces");
 }
