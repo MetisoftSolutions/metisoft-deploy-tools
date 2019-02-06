@@ -77,11 +77,21 @@ function __setVersionInPackageJson(version: string) {
 
 function __updateVersion() {
   console.log("Updating the version...");
+
+  let changedVersion = false;
   __originalVersion = __getVersionFromPackageJson();
   const newVersion = __calcNewVersionFromVersionString(__originalVersion);
-  __setVersionInPackageJson(newVersion);
-  __updateVersionStepCompleted = true;
-  return newVersion;
+
+  if (newVersion !== __originalVersion) {
+    __setVersionInPackageJson(newVersion);
+    __updateVersionStepCompleted = true;
+    changedVersion = true;
+  }
+
+  return {
+    changedVersion,
+    newVersion
+  };
 }
 
 
@@ -128,12 +138,12 @@ type IUpdateType = 'major' | 'minor' | 'patch';
 function __calcNewVersionFromVersionString(oldVersion: string) {
   const match = oldVersion.match(/^(\d+)\.(\d+)\.(\d+)-update-(major|minor|patch)+$/);
   if (!match) {
-    throw new Error(`Invalid value for "version" in package.json.`);
+    return oldVersion;
   }
 
   const [_wholeMatch, sOldMajor, sOldMinor, sOldPatch, sUpdateType] = match;
   const updateType = sUpdateType as IUpdateType;
-  const [oldMajor, oldMinor, oldPatch] = _.map([sOldMajor, sOldMinor, sOldPatch], s => parseInt(s, 10));
+  const [oldMajor, oldMinor, oldPatch] = _.map([sOldMajor, sOldMinor, sOldPatch], (s: string) => parseInt(s, 10));
   const {major, minor, patch} = __calcNewVersion(oldMajor, oldMinor, oldPatch, updateType);
   return `${major}.${minor}.${patch}`;
 }
@@ -229,6 +239,7 @@ function __performRollbacks() {
 
     .then(() => {
       if (__gitCommitStepCompleted) {
+        __gitCommitStepCompleted = false;
         return __rollBackGitCommit();
       }
       return Promise.resolve();
@@ -236,6 +247,7 @@ function __performRollbacks() {
 
     .then(() => {
       if (__updateVersionStepCompleted) {
+        __updateVersionStepCompleted = false;
         __rollBackUpdateVersion();
       }
     });
@@ -244,14 +256,29 @@ function __performRollbacks() {
 
 
 function __run(repoPath: string, githubApiKey: string) {
-  let newVersionString = '';
   return Promise.resolve()
     .then(() => __updateVersion())
-    .then((_newVersionString) => newVersionString = _newVersionString)
 
+    .then(updateResults => {
+      if (updateResults.changedVersion) {
+        return __commitAndMakeRelease(repoPath, githubApiKey, updateResults.newVersion);
+      }
+    })
+    
+    .catch(err => {
+      console.error("Error before pull.");
+      console.error(err);
+      return __performRollbacks();
+    });
+}
+
+
+
+function __commitAndMakeRelease(repoPath: string, githubApiKey: string, newVersionString: string) {
+  return Promise.resolve()
     .then(() => __gitCommit())
     .then(() => __gitPush())
-    .then(() => __makeRelease(repoPath, githubApiKey, newVersionString))    
+    .then(() => __makeRelease(repoPath, githubApiKey, newVersionString))
     
     .catch(err => {
       console.error("Error before pull.");
