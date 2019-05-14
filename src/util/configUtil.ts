@@ -109,7 +109,7 @@ const config_envName2SettingsSchema: Schema = {
 const config_writeVersionFileSchema: Schema = {
   type: 'object',
   properties: {
-    'destinationPath': nonEmptyStringSchema
+    'destinationPath': {type: 'string'}
   },
   required: [
     'destinationPath'
