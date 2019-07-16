@@ -1,6 +1,6 @@
 {
   "name": "metisoft-deploy-tools",
-  "version": "2.0.1-update-minor",
+  "version": "2.1.0",
   "description": "Deploy tools",
   "main": "index.js",
   "scripts": {
