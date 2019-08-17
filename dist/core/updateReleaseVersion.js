@@ -135,7 +135,7 @@ function __makeRelease(repoPath, githubApiKey, newVersionString) {
                 reject(err);
             }
             else if (!__isSuccessCode(response.statusCode)) {
-                reject(`${response.statusMessage}; ${body}`);
+                reject(`${response.statusMessage}; ${_.isObject(body) ? JSON.stringify(body, null, 2) : body}`);
             }
             else {
                 resolve();
@@ -181,11 +181,13 @@ function updateReleaseVersion(repoPath, githubApiKey) {
 }
 exports.updateReleaseVersion = updateReleaseVersion;
 function __commitAndMakeRelease(repoPath, githubApiKey, newVersionString) {
+    let errToRethrow;
     return es6_promise_1.Promise.resolve()
         .then(() => __gitCommit())
         .then(() => __gitPush())
         .then(() => __makeRelease(repoPath, githubApiKey, newVersionString))
         .catch(err => {
+        errToRethrow = err;
         console.error("Error before pull.");
         console.error(err);
         return __performRollbacks();
@@ -201,7 +203,13 @@ function __commitAndMakeRelease(repoPath, githubApiKey, newVersionString) {
         }
     })
         .catch(err => {
+        errToRethrow = err;
         console.error("Error after pull.");
         console.error(err);
+    })
+        .then(() => {
+        if (errToRethrow) {
+            throw errToRethrow;
+        }
     });
 }
