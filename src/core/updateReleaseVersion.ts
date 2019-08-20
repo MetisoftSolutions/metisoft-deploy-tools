@@ -241,7 +241,10 @@ export function updateReleaseVersion(repoPath: string, githubApiKey: string) {
     .catch(err => {
       console.error("Error before pull.");
       console.error(err);
-      return __performRollbacks();
+      return __performRollbacks()
+        .then(() => {
+          throw err;
+        });
     });
 }
 
