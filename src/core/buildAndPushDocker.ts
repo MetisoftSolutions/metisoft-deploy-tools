@@ -57,6 +57,7 @@ function __makeElasticBeanstalkBundle(dockerRepoAndTag: string) {
       archive.on('error', reject);
       archive.pipe(output);
       archive.directory('.ebextensions/', '.ebextensions');
+      archive.directory('.platform/', '.platform');
       archive.file('Dockerrun.aws.json', {name: 'Dockerrun.aws.json'});
       archive.finalize();
     })
