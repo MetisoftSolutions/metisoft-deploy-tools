@@ -1,6 +1,6 @@
 {
   "name": "metisoft-deploy-tools",
-  "version": "2.1.6-update-minor",
+  "version": "2.2.0",
   "description": "Deploy tools",
   "main": "index.js",
   "license": "MIT",
