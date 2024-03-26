@@ -27,7 +27,7 @@ function __genDockerRepoAndTag(dockerRepo: string, dockerLocalImageName: string,
 
 
 function __buildDocker(dockerLocalImageName: string) {
-  return processUtil.runCommand(`docker build -t ${dockerLocalImageName} --no-cache .`);
+  return processUtil.runCommand(`docker build -t ${dockerLocalImageName} --no-cache --platform linux/x86_64 .`);
 }
 
 

@@ -1,6 +1,7 @@
 {
   "name": "metisoft-deploy-tools",
   "version": "2.2.0",
+  "versionUpdate": "update-minor-IFIP-37",
   "description": "Deploy tools",
   "main": "index.js",
   "license": "MIT",

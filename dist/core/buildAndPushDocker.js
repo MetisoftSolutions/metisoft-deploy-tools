@@ -43,7 +43,7 @@ function __genDockerRepoAndTag(dockerRepo, dockerLocalImageName, envName) {
     return dockerRepoAndTag;
 }
 function __buildDocker(dockerLocalImageName) {
-    return processUtil.runCommand(`docker build -t ${dockerLocalImageName} --no-cache .`);
+    return processUtil.runCommand(`docker build -t ${dockerLocalImageName} --no-cache --platform linux/x86_64 .`);
 }
 function __pushDocker(dockerLocalImageName, dockerRepoAndTag) {
     return es6_promise_1.Promise.resolve()
